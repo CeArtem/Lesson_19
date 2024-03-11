@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas</title>
+</head>
+<body>
+<style>
+    canvas {
+    border: 1px solid black;
+    }
+</style>
+<label for="colorpick">Базовий колір</label>
+<input type="color" id="colorPicker" value="#ff0000">
+<label for="slider">Альфа канал (Прозорість)</label>
+<input type="range" id="alphaSlider" min="0" max="1" step="0.1" value="0.5">
+<button onclick="clearCanvas()">Очистити канву</button><br><br>
+<canvas id="myCanvas" width="600" height="400"></canvas>
+
+<script>
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    const colorpick = document.getElementById('colorPicker');
+    const slider = document.getElementById('alphaSlider');
+    let isDrawing = false;
+
+    function drawRect(startX, startY, endX, endY) {
+        const color = colorpick.value;
+        const alpha = slider.value;
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha;
+        const width = endX - startX;
+        const height = endY - startY;
+        ctx.fillRect(startX, startY, width, height);
+    }
+
+    canvas.addEventListener('mousedown', function(e) {
+        isDrawing = true;
+        const startX = e.clientX - canvas.offsetLeft;
+        const startY = e.clientY - canvas.offsetTop;
+        canvas.addEventListener('mousemove', onMouseMove);
+        canvas.addEventListener('mouseup', onMouseUp);
+        
+        function onMouseMove(e) {
+            if (isDrawing) {
+                const endX = e.clientX - canvas.offsetLeft;
+                const endY = e.clientY - canvas.offsetTop;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawRect(startX, startY, endX, endY);
+            }
+        }
+
+        function onMouseUp() {
+            isDrawing = false;
+            canvas.removeEventListener('mousemove', onMouseMove);
+            canvas.removeEventListener('mouseup', onMouseUp);
+        }
+    });
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+</script>
+</body>
+</html>
